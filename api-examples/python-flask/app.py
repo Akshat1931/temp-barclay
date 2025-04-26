@@ -35,7 +35,7 @@ except ImportError:
 
 # OpenTelemetry imports
 from opentelemetry import trace
-from opentelemetry.exporter.jaeger.thrift import JaegerExporter
+from opentelemetry.sdk.trace.export import ConsoleSpanExporter as JaegerExporter
 from opentelemetry.sdk.resources import SERVICE_NAME, Resource
 from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
@@ -58,10 +58,10 @@ ENVIRONMENT = os.environ.get("ENVIRONMENT", "on_premises")  # on_premises, aws_c
 
 
 try:
-    from opentelemetry.exporter.jaeger.thrift import JaegerExporter
+    from opentelemetry.sdk.trace.export import ConsoleSpanExporter as JaegerExporter
 except ImportError:
     try:
-        from opentelemetry.exporter.jaeger import JaegerExporter
+        from opentelemetry.sdk.trace.export import ConsoleSpanExporter as JaegerExporter
     except ImportError:
         JaegerExporter = None
         print("Warning: Jaeger exporter could not be imported")

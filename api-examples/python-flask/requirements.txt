@@ -4,6 +4,6 @@ opentelemetry-sdk==1.21.0
 opentelemetry-instrumentation-flask==0.42b0
 opentelemetry-instrumentation-requests==0.42b0
 opentelemetry-instrumentation-logging==0.42b0
-opentelemetry-exporter-jaeger==1.21.0
+opentelemetry-exporter-jaeger==1.11.0
 python-json-logger
 requests

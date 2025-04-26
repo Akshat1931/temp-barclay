@@ -1,0 +1,6 @@
+flask
+python-json-logger
+requests
+uuid
+opentelemetry-exporter-jaeger==1.11.0
+opentelemetry-exporter-otlp

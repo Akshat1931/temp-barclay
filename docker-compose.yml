@@ -121,9 +121,13 @@ services:
     depends_on:
       - elasticsearch
     restart: unless-stopped
+    entrypoint: /bin/sh
+    command: -c "echo 'Waiting for Elasticsearch to be ready...' && sleep 30 && elastalert --verbose --config /opt/elastalert/config.yaml"
     environment:
       - ELASTICSEARCH_HOST=elasticsearch
       - ELASTICSEARCH_PORT=9200
+      # ... existing code ...
+      # ... existing code ...
       # Add security if needed
       # - ELASTICSEARCH_USER=elastic
       # - ELASTICSEARCH_PASSWORD=${ELASTIC_PASSWORD}
@@ -233,70 +237,70 @@ services:
 # Include your actual API services here for direct monitoring
 
   # Example API service 1 (replace with your real services)
-  user-service:
-    image: ${USER_SERVICE_IMAGE}
-    container_name: user-service
-    ports:
-      - "8001:8000"
-    environment:
-      - SERVICE_NAME=user-service
-      - ENVIRONMENT=production
-      - JAEGER_HOST=jaeger
-      - JAEGER_PORT=4317
-      - LOG_LEVEL=INFO
-      # Add your actual service environment variables
-    volumes:
-      - ./logs/user-service:/app/logs
-    networks:
-      - monitoring-network
-    restart: unless-stopped
-    depends_on:
-      - elasticsearch
-      - jaeger
+  # user-service:
+  #   image: ${USER_SERVICE_IMAGE}
+  #   container_name: user-service
+  #   ports:
+  #     - "8011:8000"
+  #   environment:
+  #     - SERVICE_NAME=user-service
+  #     - ENVIRONMENT=production
+  #     - JAEGER_HOST=jaeger
+  #     - JAEGER_PORT=4317
+  #     - LOG_LEVEL=INFO
+  #     # Add your actual service environment variables
+  #   volumes:
+  #     - ./logs/user-service:/app/logs
+  #   networks:
+  #     - monitoring-network
+  #   restart: unless-stopped
+  #   depends_on:
+  #     - elasticsearch
+  #     # - jaeger
 
-  # Example API service 2 (replace with your real services)
-  product-service:
-    image: ${PRODUCT_SERVICE_IMAGE}
-    container_name: product-service
-    ports:
-      - "8002:8000"
-    environment:
-      - SERVICE_NAME=product-service
-      - ENVIRONMENT=production
-      - JAEGER_HOST=jaeger
-      - JAEGER_PORT=4317
-      - LOG_LEVEL=INFO
-      # Add your actual service environment variables
-    volumes:
-      - ./logs/product-service:/app/logs
-    networks:
-      - monitoring-network
-    restart: unless-stopped
-    depends_on:
-      - elasticsearch
-      - jaeger
+  # # Example API service 2 (replace with your real services)
+  # product-service:
+  #   image: ${PRODUCT_SERVICE_IMAGE}
+  #   container_name: product-service
+  #   ports:
+  #     - "8012:8000"
+  #   environment:
+  #     - SERVICE_NAME=product-service
+  #     - ENVIRONMENT=production
+  #     - JAEGER_HOST=jaeger
+  #     - JAEGER_PORT=4317
+  #     - LOG_LEVEL=INFO
+  #     # Add your actual service environment variables
+  #   volumes:
+  #     - ./logs/product-service:/app/logs
+  #   networks:
+  #     - monitoring-network
+  #   restart: unless-stopped
+  #   depends_on:
+  #     - elasticsearch
+  #     # - jaeger
 
-  # Example API service 3 (replace with your real services)
-  payment-service:
-    image: ${PAYMENT_SERVICE_IMAGE}
-    container_name: payment-service
-    ports:
-      - "8003:8000"
-    environment:
-      - SERVICE_NAME=payment-service
-      - ENVIRONMENT=production
-      - JAEGER_HOST=jaeger
-      - JAEGER_PORT=4317
-      - LOG_LEVEL=INFO
-      # Add your actual service environment variables
-    volumes:
-      - ./logs/payment-service:/app/logs
-    networks:
-      - monitoring-network
-    restart: unless-stopped
-    depends_on:
-      - elasticsearch
-      - jaeger
+  # # Example API service 3 (replace with your real services)
+  # payment-service:
+  #   image: ${PAYMENT_SERVICE_IMAGE}
+  #   container_name: payment-service
+  #   ports:
+  #     - "8013:8000"
+  #   environment:
+  #     - SERVICE_NAME=payment-service
+  #     - ENVIRONMENT=production
+  #     - JAEGER_HOST=jaeger
+  #     - JAEGER_PORT=4317
+  #     - LOG_LEVEL=INFO
+  #     # Add your actual service environment variables
+  #   volumes:
+  #     - ./logs/payment-service:/app/logs
+  #   networks:
+  #     - monitoring-network
+  #   restart: unless-stopped
+  #   depends_on:
+  #     - elasticsearch
+  #     # - jaeger
 
 volumes:
   elasticsearch-data:
