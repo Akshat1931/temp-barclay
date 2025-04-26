@@ -2,24 +2,29 @@ FROM python:3.9-slim
 
 WORKDIR /app
 
-# Install dependencies
-COPY anomaly-detection/requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
-RUN pip install python-json-logger requests
+# Copy requirements file
+COPY api-examples/python-flask/requirements.txt .
 
-# Create the monitoring module structure
+# Install dependencies (add the missing ones)
+RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install uuid python-json-logger opentelemetry-exporter-jaeger==1.11.1 opentelemetry-instrumentation
+
+# Create required directories
 RUN mkdir -p /app/monitoring/utils
 
-# Copy files
+# Copy the monitoring module files
 COPY monitoring/__init__.py /app/monitoring/
 COPY monitoring/utils/__init__.py /app/monitoring/utils/
 COPY monitoring/utils/production_logging.py /app/monitoring/utils/
 
 # Copy application code
-COPY anomaly-detection/ /app/
+COPY api-examples/python-flask/ .
+
+# Create log directory
+RUN mkdir -p /app/logs
 
 # Set Python path
 ENV PYTHONPATH="/app:${PYTHONPATH}"
 
-# Run the anomaly detection service
+# Run the application
 CMD ["python", "app.py"]

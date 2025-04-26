@@ -7,19 +7,19 @@ COPY anomaly-detection/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 RUN pip install python-json-logger requests
 
-# Create the monitoring module structure
+# Create monitoring directory structure
 RUN mkdir -p /app/monitoring/utils
 
-# Copy files
+# Copy the monitoring module
 COPY monitoring/__init__.py /app/monitoring/
 COPY monitoring/utils/__init__.py /app/monitoring/utils/
 COPY monitoring/utils/production_logging.py /app/monitoring/utils/
 
-# Copy application code
-COPY anomaly-detection/ /app/
+# Copy the application code
+COPY anomaly-detection/ .
 
 # Set Python path
 ENV PYTHONPATH="/app:${PYTHONPATH}"
 
-# Run the anomaly detection service
+# Run the application
 CMD ["python", "app.py"]

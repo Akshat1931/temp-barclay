@@ -162,12 +162,11 @@ services:
   # Python Anomaly Detection Service - Production version
   anomaly-detection:
     build:
-      context: ./anomaly-detection
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: anomaly.Dockerfile
     container_name: anomaly-detection
     volumes:
       - ./anomaly-detection:/app
-      # Add logs volume if needed
       - ./logs:/app/logs
     networks:
       - monitoring-network
@@ -177,6 +176,7 @@ services:
     environment:
       - ES_HOST=elasticsearch
       - ES_PORT=9200
+    # Rest of environment variables remain the same
       # Add security if needed
       # - ES_USER=elastic
       # - ES_PASSWORD=${ELASTIC_PASSWORD}
@@ -245,8 +245,11 @@ services:
 # Include your actual API services here for direct monitoring
 
   # Example API service 1 (replace with your real services)
+  # User service
   user-service:
-    image: ${USER_SERVICE_IMAGE}
+    build:
+      context: .
+      dockerfile: api_service.Dockerfile
     container_name: user-service
     ports:
       - "8001:8000"
@@ -256,7 +259,6 @@ services:
       - JAEGER_HOST=jaeger
       - JAEGER_PORT=4317
       - LOG_LEVEL=INFO
-      # Add your actual service environment variables
     volumes:
       - ./logs/user-service:/app/logs
     networks:
@@ -266,9 +268,11 @@ services:
       - elasticsearch
       - jaeger
 
-  # Example API service 2 (replace with your real services)
+  # Product service
   product-service:
-    image: ${PRODUCT_SERVICE_IMAGE}
+    build:
+      context: .
+      dockerfile: api_service.Dockerfile
     container_name: product-service
     ports:
       - "8002:8000"
@@ -278,7 +282,6 @@ services:
       - JAEGER_HOST=jaeger
       - JAEGER_PORT=4317
       - LOG_LEVEL=INFO
-      # Add your actual service environment variables
     volumes:
       - ./logs/product-service:/app/logs
     networks:
@@ -288,9 +291,11 @@ services:
       - elasticsearch
       - jaeger
 
-  # Example API service 3 (replace with your real services)
+  # Payment service
   payment-service:
-    image: ${PAYMENT_SERVICE_IMAGE}
+    build:
+      context: .
+      dockerfile: api_service.Dockerfile
     container_name: payment-service
     ports:
       - "8003:8000"
@@ -300,7 +305,6 @@ services:
       - JAEGER_HOST=jaeger
       - JAEGER_PORT=4317
       - LOG_LEVEL=INFO
-      # Add your actual service environment variables
     volumes:
       - ./logs/payment-service:/app/logs
     networks:
@@ -309,12 +313,3 @@ services:
     depends_on:
       - elasticsearch
       - jaeger
-
-volumes:
-  elasticsearch-data:
-  prometheus-data:
-  grafana-data:
-
-networks:
-  monitoring-network:
-    driver: bridge
