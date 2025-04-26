@@ -1,0 +1,58 @@
+name: cross_environment_correlation
+type: frequency
+index: api-logs-*
+num_events: 5
+timeframe:
+  minutes: 2
+  
+filter:
+- range:
+    status_code:
+      from: 500
+      to: 599
+
+query_key:
+  - "request_id"
+  - "environment_type"
+
+use_count_query: true
+doc_type: _doc
+
+alert:
+- "email"
+- "slack"
+- "pagerduty"
+- "command"
+
+email:
+- "${ALERT_EMAIL}"
+
+slack:
+slack_webhook_url: "${SLACK_WEBHOOK_URL}"
+slack_emoji_override: ":boom:"
+slack_username_override: "API Monitoring"
+slack_msg_color: "danger"
+
+pagerduty_service_key: "${PAGERDUTY_SERVICE_KEY}"
+pagerduty_client_name: "ElastAlert"
+pagerduty_event_type: "trigger"
+
+command: ["/bin/sh", "-c", "echo 'Cross-environment error correlation detected for request_id {{ request_id }}' | tee -a /opt/elastalert/logs/alerts.log"]
+
+alert_subject: "[CRITICAL] Cross-Environment Error Correlation Detected"
+alert_text: |
+  Multiple errors detected across different environments with the same request ID.
+  
+  Request ID: {{ request_id }}
+  Environments affected: {{ environment_type }}
+  Status Codes: {{ status_code }}
+  Services Affected: {{ service }}
+  
+  This indicates a cascading failure across your distributed system.
+  IMMEDIATE ACTION REQUIRED!
+
+alert_text_type: alert_text_only
+
+# Throttle these critical alerts to prevent alert fatigue
+realert:
+  minutes: 10

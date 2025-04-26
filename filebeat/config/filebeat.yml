@@ -1,0 +1,95 @@
+filebeat.inputs:
+# Collect logs from your actual production API servers
+- type: log
+  enabled: true
+  paths:
+    - /var/log/api-services/*.log
+    - /var/log/nginx/access.log
+    - /var/log/application/*.log  # Add your actual application log paths
+  fields:
+    source_type: production
+    environment: production
+  fields_under_root: true
+  tags: ["production"]
+  json.keys_under_root: true
+  json.add_error_key: true
+
+# Monitor container logs if your APIs are containerized
+- type: container
+  enabled: true
+  paths:
+    - /var/lib/docker/containers/*/*.log
+  json.keys_under_root: true
+  json.add_error_key: true
+  json.message_key: log
+  fields:
+    source_type: container
+    environment: production
+  fields_under_root: true
+  tags: ["container"]
+
+# Add additional inputs for your specific environment
+# For example, collect logs from Kubernetes if applicable
+- type: kubernetes
+  enabled: false  # Set to true if using Kubernetes
+  node: ${NODE_NAME}
+  add_resource_metadata:
+    namespace: true
+    pod: true
+    node: true
+    container: true
+  fields:
+    source_type: kubernetes
+    environment: production
+  fields_under_root: true
+  tags: ["kubernetes"]
+
+processors:
+  - add_host_metadata: ~
+  - add_cloud_metadata: ~
+  - add_docker_metadata: ~
+  - add_kubernetes_metadata: ~
+
+  # Extract structured data
+  - decode_json_fields:
+      fields: ["message"]
+      target: ""
+      when:
+        contains:
+          message: "{"
+
+  # Extract request_id from logs
+  - dissect:
+      tokenizer: "%{message}"
+      field: "message"
+      target_prefix: ""
+      when:
+        has_fields: ["message"]
+
+  # Add environment type based on source
+  - add_fields:
+      target: ''
+      fields:
+        environment_type: "production"
+      when.equals:
+        environment: "production"
+
+output.logstash:
+  hosts: ["logstash:5044"]
+  # Add authentication if needed
+  # username: "logstash_user"
+  # password: "${LOGSTASH_PASSWORD}"
+
+# Enable monitoring for Filebeat itself
+monitoring:
+  enabled: true
+  elasticsearch:
+    hosts: ["elasticsearch:9200"]
+
+logging.level: info
+logging.to_files: true
+logging.files:
+  path: /var/log/filebeat
+  name: filebeat
+  keepfiles: 7
+  permissions: 0644

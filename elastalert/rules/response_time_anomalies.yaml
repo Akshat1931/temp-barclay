@@ -1,0 +1,57 @@
+name: production_response_time_anomalies
+type: any
+index: api-anomalies
+filter:
+- term:
+    type: "response_time"
+- term:
+    environment: "production"
+- term:
+    severity: "critical"
+
+alert:
+- "email"
+- "slack"
+- "pagerduty"
+
+email:
+- "${ALERT_EMAIL}"
+
+slack:
+slack_webhook_url: "${SLACK_WEBHOOK_URL}"
+slack_emoji_override: ":red_circle:"
+slack_username_override: "API Monitoring"
+slack_msg_color: "danger"
+
+pagerduty_service_key: "${PAGERDUTY_SERVICE_KEY}"
+pagerduty_client_name: "ElastAlert"
+pagerduty_event_type: "trigger"
+
+alert_subject: "[CRITICAL] PRODUCTION Response Time Alert: {{ service }}/{{ endpoint }}"
+alert_text: |
+  CRITICAL response time anomaly detected in PRODUCTION:
+  
+  Service: {{ service }}
+  Endpoint: {{ endpoint }}
+  Average Response Time: {{ avg_response_time }}ms
+  P95 Response Time: {{ p95_response_time }}ms
+  Request Count: {{ request_count }}
+  Severity: {{ severity }}
+  Detector: {{ detector }}
+  Timestamp: {{ timestamp }}
+  
+  {% if baseline_value %}
+  Baseline Response Time: {{ baseline_value }}ms
+  Deviation: {{ avg_response_time / baseline_value }}x normal
+  {% endif %}
+
+  This requires immediate attention!
+
+alert_text_type: alert_text_only
+
+# Throttle critical alerts to prevent alert storms but ensure visibility
+realert:
+  minutes: 5
+
+exponential_realert:
+  hours: 1
