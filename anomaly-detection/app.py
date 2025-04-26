@@ -22,7 +22,7 @@ logging.basicConfig(
 logger = configure_production_logging(__name__)
 
 # Elasticsearch connection - Use real connection parameters
-ES_HOST = os.environ.get('ES_HOST', 'elasticsearch')
+ES_HOST = os.environ.get('ES_HOST', 'localhost')
 ES_PORT = os.environ.get('ES_PORT', '9200')
 ES_USER = os.environ.get('ES_USER', '')
 ES_PASSWORD = os.environ.get('ES_PASSWORD', '')
