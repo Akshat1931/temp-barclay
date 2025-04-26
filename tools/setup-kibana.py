@@ -27,7 +27,7 @@ KIBANA_PASSWORD = os.environ.get("KIBANA_PASSWORD", "")
 
 # Authentication headers
 AUTH = (KIBANA_USER, KIBANA_PASSWORD) if KIBANA_USER and KIBANA_PASSWORD else None
-HEADERS = {"kbn-xsrf": "true", "Content-Type": "application/json"}
+HEADERS = {"kbn-xsrf": "True", "Content-Type": "application/json"}
 
 def wait_for_kibana():
     """Wait for Kibana to be available"""
@@ -151,15 +151,15 @@ def create_visualizations():
                     "type": "line",
                     "params": {
                         "type": "line",
-                        "grid": {"categoryLines": false},
+                        "grid": {"categoryLines": False},
                         "categoryAxes": [
                             {
                                 "id": "CategoryAxis-1",
                                 "type": "category",
                                 "position": "bottom",
-                                "show": true,
+                                "show": True,
                                 "scale": {"type": "linear"},
-                                "labels": {"show": true, "truncate": 100},
+                                "labels": {"show": True, "truncate": 100},
                                 "title": {}
                             }
                         ],
@@ -169,54 +169,54 @@ def create_visualizations():
                                 "name": "LeftAxis-1",
                                 "type": "value",
                                 "position": "left",
-                                "show": true,
+                                "show": True,
                                 "scale": {"type": "linear", "mode": "normal"},
-                                "labels": {"show": true, "rotate": 0, "filter": false, "truncate": 100},
+                                "labels": {"show": tTrue, "rotate": 0, "filter": False, "truncate": 100},
                                 "title": {"text": "Response Time (ms)"}
                             }
                         ],
                         "seriesParams": [
                             {
-                                "show": true,
+                                "show": True,
                                 "type": "line",
                                 "mode": "normal",
                                 "data": {"label": "Average", "id": "1"},
                                 "valueAxis": "ValueAxis-1",
-                                "drawLinesBetweenPoints": true,
+                                "drawLinesBetweenPoints": True,
                                 "lineWidth": 2,
                                 "interpolate": "linear",
-                                "showCircles": true
+                                "showCircles": True
                             },
                             {
-                                "show": true,
+                                "show": True,
                                 "type": "line",
                                 "mode": "normal",
                                 "data": {"label": "95th Percentile", "id": "2"},
                                 "valueAxis": "ValueAxis-1",
-                                "drawLinesBetweenPoints": true,
+                                "drawLinesBetweenPoints": True,
                                 "lineWidth": 1,
                                 "interpolate": "linear",
-                                "showCircles": true
+                                "showCircles": True
                             }
                         ],
-                        "addTooltip": true,
-                        "addLegend": true,
+                        "addTooltip": True,
+                        "addLegend": True,
                         "legendPosition": "right",
                         "times": [],
-                        "addTimeMarker": false,
-                        "labels": {"show": false},
+                        "addTimeMarker": False,
+                        "labels": {"show": False},
                         "dimensions": {
-                            "x": {"accessor": 0, "format": {"id": "date", "params": {"pattern": "HH:mm:ss"}}, "params": {"date": true, "interval": "PT1M", "format": "HH:mm:ss"}, "aggType": "date_histogram"},
+                            "x": {"accessor": 0, "format": {"id": "date", "params": {"pattern": "HH:mm:ss"}}, "params": {"date": True, "interval": "PT1M", "format": "HH:mm:ss"}, "aggType": "date_histogram"},
                             "y": [{"accessor": 1, "format": {"id": "number", "params": {"pattern": "0,0.00"}}, "params": {}, "aggType": "avg"},
                                   {"accessor": 2, "format": {"id": "number", "params": {"pattern": "0,0.00"}}, "params": {}, "aggType": "percentiles"}],
                             "series": [{"accessor": 3, "format": {"id": "string"}, "params": {}, "aggType": "terms"}]
                         }
                     },
                     "aggs": [
-                        {"id": "1", "enabled": true, "type": "avg", "schema": "metric", "params": {"field": "response_time", "customLabel": "Average"}},
-                        {"id": "2", "enabled": true, "type": "percentiles", "schema": "metric", "params": {"field": "response_time", "percents": [95], "customLabel": "95th Percentile"}},
-                        {"id": "3", "enabled": true, "type": "date_histogram", "schema": "segment", "params": {"field": "@timestamp", "timeRange": {"from": "now-1h", "to": "now"}, "useNormalizedEsInterval": true, "interval": "auto", "drop_partials": false, "min_doc_count": 1, "extended_bounds": {}}},
-                        {"id": "4", "enabled": true, "type": "terms", "schema": "group", "params": {"field": "service", "size": 10, "order": "desc", "orderBy": "1", "otherBucket": false, "otherBucketLabel": "Other", "missingBucket": false, "missingBucketLabel": "Missing"}}
+                        {"id": "1", "enabled": True, "type": "avg", "schema": "metric", "params": {"field": "response_time", "customLabel": "Average"}},
+                        {"id": "2", "enabled": True, "type": "percentiles", "schema": "metric", "params": {"field": "response_time", "percents": [95], "customLabel": "95th Percentile"}},
+                        {"id": "3", "enabled": True, "type": "date_histogram", "schema": "segment", "params": {"field": "@timestamp", "timeRange": {"from": "now-1h", "to": "now"}, "useNormalizedEsInterval": True, "interval": "auto", "drop_partials": False, "min_doc_count": 1, "extended_bounds": {}}},
+                        {"id": "4", "enabled": True, "type": "terms", "schema": "group", "params": {"field": "service", "size": 10, "order": "desc", "orderBy": "1", "otherBucket": False, "otherBucketLabel": "Other", "missingBucket": False, "missingBucketLabel": "Missing"}}
                     ]
                 }),
                 "uiStateJSON": "{}",
@@ -241,15 +241,15 @@ def create_visualizations():
                     "type": "area",
                     "params": {
                         "type": "area",
-                        "grid": {"categoryLines": false},
+                        "grid": {"categoryLines": False},
                         "categoryAxes": [
                             {
                                 "id": "CategoryAxis-1",
                                 "type": "category",
                                 "position": "bottom",
-                                "show": true,
+                                "show": True,
                                 "scale": {"type": "linear"},
-                                "labels": {"show": true, "truncate": 100},
+                                "labels": {"show": True, "truncate": 100},
                                 "title": {}
                             }
                         ],
@@ -259,33 +259,33 @@ def create_visualizations():
                                 "name": "LeftAxis-1",
                                 "type": "value",
                                 "position": "left",
-                                "show": true,
-                                "scale": {"type": "linear", "mode": "percentage", "defaultYExtents": false},
-                                "labels": {"show": true, "rotate": 0, "filter": false, "truncate": 100},
+                                "show": True,
+                                "scale": {"type": "linear", "mode": "percentage", "defaultYExtents": False},
+                                "labels": {"show": True, "rotate": 0, "filter": False, "truncate": 100},
                                 "title": {"text": "Error Rate (%)"}
                             }
                         ],
                         "seriesParams": [
                             {
-                                "show": true,
+                                "show": True,
                                 "type": "area",
                                 "mode": "stacked",
                                 "data": {"label": "Error Rate", "id": "1"},
                                 "valueAxis": "ValueAxis-1",
-                                "drawLinesBetweenPoints": true,
+                                "drawLinesBetweenPoints": True,
                                 "lineWidth": 2,
                                 "interpolate": "linear",
-                                "showCircles": true
+                                "showCircles": True
                             }
                         ],
-                        "addTooltip": true,
-                        "addLegend": true,
+                        "addTooltip": True,
+                        "addLegend": True,
                         "legendPosition": "right",
                         "times": [],
-                        "addTimeMarker": false,
+                        "addTimeMarker": False,
                         "labels": {},
                         "thresholdLine": {
-                            "show": true,
+                            "show": True,
                             "value": 5,
                             "width": 1,
                             "style": "full",
@@ -293,9 +293,9 @@ def create_visualizations():
                         }
                     },
                     "aggs": [
-                        {"id": "1", "enabled": true, "type": "avg", "schema": "metric", "params": {"field": "is_error", "customLabel": "Error Rate"}},
-                        {"id": "2", "enabled": true, "type": "date_histogram", "schema": "segment", "params": {"field": "@timestamp", "timeRange": {"from": "now-1h", "to": "now"}, "useNormalizedEsInterval": true, "interval": "auto", "drop_partials": false, "min_doc_count": 1, "extended_bounds": {}}},
-                        {"id": "3", "enabled": true, "type": "terms", "schema": "group", "params": {"field": "service", "size": 10, "order": "desc", "orderBy": "1", "otherBucket": false, "otherBucketLabel": "Other", "missingBucket": false, "missingBucketLabel": "Missing"}}
+                        {"id": "1", "enabled": True, "type": "avg", "schema": "metric", "params": {"field": "is_error", "customLabel": "Error Rate"}},
+                        {"id": "2", "enabled": True, "type": "date_histogram", "schema": "segment", "params": {"field": "@timestamp", "timeRange": {"from": "now-1h", "to": "now"}, "useNormalizedEsInterval": True, "interval": "auto", "drop_partials": False, "min_doc_count": 1, "extended_bounds": {}}},
+                        {"id": "3", "enabled": True, "type": "terms", "schema": "group", "params": {"field": "service", "size": 10, "order": "desc", "orderBy": "1", "otherBucket": False, "otherBucketLabel": "Other", "missingBucket": False, "missingBucketLabel": "Missing"}}
                     ]
                 }),
                 "uiStateJSON": "{}",
@@ -319,12 +319,12 @@ def create_visualizations():
                     "title": "API Anomaly Summary",
                     "type": "metric",
                     "params": {
-                        "addTooltip": true,
-                        "addLegend": false,
+                        "addTooltip": True,
+                        "addLegend": False,
                         "type": "metric",
                         "metric": {
-                            "percentageMode": false,
-                            "useRanges": false,
+                            "percentageMode": False,
+                            "useRanges": False,
                             "colorSchema": "Red to Green",
                             "metricColorMode": "Labels",
                             "colorsRange": [
@@ -332,15 +332,15 @@ def create_visualizations():
                                 {"from": 10, "to": 50},
                                 {"from": 50, "to": 100}
                             ],
-                            "labels": {"show": true},
-                            "invertColors": false,
-                            "style": {"bgFill": "#000", "bgColor": false, "labelColor": false, "subText": "", "fontSize": 36}
+                            "labels": {"show": True},
+                            "invertColors": False,
+                            "style": {"bgFill": "#000", "bgColor": False, "labelColor": False, "subText": "", "fontSize": 36}
                         }
                     },
                     "aggs": [
-                        {"id": "1", "enabled": true, "type": "count", "schema": "metric", "params": {"customLabel": "Total Anomalies"}},
-                        {"id": "2", "enabled": true, "type": "cardinality", "schema": "metric", "params": {"field": "service", "customLabel": "Affected Services"}},
-                        {"id": "3", "enabled": true, "type": "count", "schema": "metric", "params": {"customLabel": "Critical Anomalies"}}
+                        {"id": "1", "enabled": True, "type": "count", "schema": "metric", "params": {"customLabel": "Total Anomalies"}},
+                        {"id": "2", "enabled": True, "type": "cardinality", "schema": "metric", "params": {"field": "service", "customLabel": "Affected Services"}},
+                        {"id": "3", "enabled": True, "type": "count", "schema": "metric", "params": {"customLabel": "Critical Anomalies"}}
                     ]
                 }),
                 "uiStateJSON": "{}",
@@ -350,7 +350,7 @@ def create_visualizations():
                     "searchSourceJSON": json.dumps({
                         "query": {"query": "", "language": "kuery"},
                         "filter": [
-                            {"meta": {"index": "api-anomalies", "type": "phrase", "key": "severity", "value": "critical", "params": {"query": "critical"}, "disabled": false, "negate": false}, "query": {"match_phrase": {"severity": "critical"}}, "$state": {"store": "appState"}}
+                            {"meta": {"index": "api-anomalies", "type": "phrase", "key": "severity", "value": "critical", "params": {"query": "critical"}, "disabled": False, "negate": False}, "query": {"match_phrase": {"severity": "critical"}}, "$state": {"store": "appState"}}
                         ],
                         "indexRefName": "kibanaSavedObjectMeta.searchSourceJSON.index"
                     })
@@ -370,15 +370,15 @@ def create_visualizations():
                     "type": "histogram",
                     "params": {
                         "type": "histogram",
-                        "grid": {"categoryLines": false},
+                        "grid": {"categoryLines": False},
                         "categoryAxes": [
                             {
                                 "id": "CategoryAxis-1",
                                 "type": "category",
                                 "position": "bottom",
-                                "show": true,
+                                "show": True,
                                 "scale": {"type": "linear"},
-                                "labels": {"show": true, "truncate": 100},
+                                "labels": {"show": True, "truncate": 100},
                                 "title": {}
                             }
                         ],
@@ -388,33 +388,33 @@ def create_visualizations():
                                 "name": "LeftAxis-1",
                                 "type": "value",
                                 "position": "left",
-                                "show": true,
+                                "show": True,
                                 "scale": {"type": "linear", "mode": "normal"},
-                                "labels": {"show": true, "rotate": 0, "filter": false, "truncate": 100},
+                                "labels": {"show": True, "rotate": 0, "filter": False, "truncate": 100},
                                 "title": {"text": "Request Count"}
                             }
                         ],
                         "seriesParams": [
                             {
-                                "show": "true",
+                                "show": "True",
                                 "type": "histogram",
                                 "mode": "stacked",
                                 "data": {"label": "Count", "id": "1"},
                                 "valueAxis": "ValueAxis-1",
-                                "drawLinesBetweenPoints": true,
-                                "showCircles": true
+                                "drawLinesBetweenPoints": True,
+                                "showCircles": True
                             }
                         ],
-                        "addTooltip": true,
-                        "addLegend": true,
+                        "addTooltip": True,
+                        "addLegend": True,
                         "legendPosition": "right",
                         "times": [],
-                        "addTimeMarker": false
+                        "addTimeMarker": False
                     },
                     "aggs": [
-                        {"id": "1", "enabled": true, "type": "count", "schema": "metric", "params": {}},
-                        {"id": "2", "enabled": true, "type": "date_histogram", "schema": "segment", "params": {"field": "@timestamp", "timeRange": {"from": "now-24h", "to": "now"}, "useNormalizedEsInterval": true, "interval": "auto", "drop_partials": false, "min_doc_count": 1, "extended_bounds": {}}},
-                        {"id": "3", "enabled": true, "type": "terms", "schema": "group", "params": {"field": "service", "size": 10, "order": "desc", "orderBy": "1", "otherBucket": false, "otherBucketLabel": "Other", "missingBucket": false, "missingBucketLabel": "Missing"}}
+                        {"id": "1", "enabled": True, "type": "count", "schema": "metric", "params": {}},
+                        {"id": "2", "enabled": True, "type": "date_histogram", "schema": "segment", "params": {"field": "@timestamp", "timeRange": {"from": "now-24h", "to": "now"}, "useNormalizedEsInterval": True, "interval": "auto", "drop_partials": False, "min_doc_count": 1, "extended_bounds": {}}},
+                        {"id": "3", "enabled": True, "type": "terms", "schema": "group", "params": {"field": "service", "size": 10, "order": "desc", "orderBy": "1", "otherBucket": False, "otherBucketLabel": "Other", "missingBucket": False, "missingBucketLabel": "Missing"}}
                     ]
                 }),
                 "uiStateJSON": "{}",
@@ -519,15 +519,15 @@ def create_dashboard():
                 }
             ]),
             "optionsJSON": json.dumps({
-                "hidePanelTitles": false,
-                "useMargins": true
+                "hidePanelTitles": False,
+                "useMargins": True
             }),
             "version": 1,
-            "timeRestore": true,
+            "timeRestore": True,
             "timeTo": "now",
             "timeFrom": "now-24h",
             "refreshInterval": {
-                "pause": false,
+                "pause": False,
                 "value": 60000  # 1 minute refresh
             },
             "kibanaSavedObjectMeta": {

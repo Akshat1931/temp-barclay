@@ -5,21 +5,19 @@ WORKDIR /app
 # Install dependencies
 COPY anomaly-detection/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
-RUN pip install python-json-logger requests
+RUN pip install python-json-logger requests opentelemetry-exporter-jaeger
 
-# Create monitoring directory structure
+# Create the monitoring module structure
 RUN mkdir -p /app/monitoring/utils
 
-# Copy the monitoring module
-COPY monitoring/__init__.py /app/monitoring/
-COPY monitoring/utils/__init__.py /app/monitoring/utils/
-COPY monitoring/utils/production_logging.py /app/monitoring/utils/
+# Copy monitoring module files
+COPY monitoring/ /app/monitoring/
 
-# Copy the application code
-COPY anomaly-detection/ .
+# Copy application code
+COPY anomaly-detection/ /app/
 
 # Set Python path
 ENV PYTHONPATH="/app:${PYTHONPATH}"
 
-# Run the application
+# Run the anomaly detection service
 CMD ["python", "app.py"]

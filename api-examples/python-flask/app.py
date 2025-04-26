@@ -2,18 +2,21 @@
 Example Flask API with standardized logging and OpenTelemetry integration
 """
 import sys
+import os
+
+# Add the parent directory to Python path
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
+
+# Import logging first
+from monitoring.utils.production_logging import configure_production_logging, setup_flask_logging
+
+import flask
 from flask import Flask, request, jsonify
 import requests
 import logging
 import json
 import time
 import random
-import os
-from opentelemetry import trace
-from opentelemetry.exporter.jaeger.thrift import JaegerExporter
-from opentelemetry.sdk.resources import SERVICE_NAME, Resource
-from opentelemetry.sdk.trace import TracerProvider
-from opentelemetry.sdk.trace.export import BatchSpanProcessor
 
 # Comprehensive import workaround for importlib_metadata
 try:
@@ -30,20 +33,22 @@ except ImportError:
                 return lambda *args, **kwargs: None
         importlib_metadata = DummyMetadata()
 
-# Add the parent directory to Python path
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
-from  monitoring.utils.production_logging import setup_flask_logging
-
-# Minimal OpenTelemetry configuration
+# OpenTelemetry imports
 from opentelemetry import trace
-from opentelemetry.sdk.trace import TracerProvider
+from opentelemetry.exporter.jaeger.thrift import JaegerExporter
 from opentelemetry.sdk.resources import SERVICE_NAME, Resource
+from opentelemetry.sdk.trace import TracerProvider
+from opentelemetry.sdk.trace.export import BatchSpanProcessor
 from opentelemetry.instrumentation.flask import FlaskInstrumentor
 from opentelemetry.instrumentation.requests import RequestsInstrumentor
 from opentelemetry.instrumentation.logging import LoggingInstrumentor
 from opentelemetry.trace.status import Status, StatusCode
 from opentelemetry.propagate import extract, inject
 
+# Configure logging
+logger = configure_production_logging(__name__)
+
+# Rest of your existing code remains the same
 # Create Flask app
 app = Flask(__name__)
 
@@ -51,32 +56,68 @@ app = Flask(__name__)
 SERVICE_NAME = os.environ.get("SERVICE_NAME", "example-api-service")
 ENVIRONMENT = os.environ.get("ENVIRONMENT", "on_premises")  # on_premises, aws_cloud, azure_cloud
 
+
+try:
+    from opentelemetry.exporter.jaeger.thrift import JaegerExporter
+except ImportError:
+    try:
+        from opentelemetry.exporter.jaeger import JaegerExporter
+    except ImportError:
+        JaegerExporter = None
+        print("Warning: Jaeger exporter could not be imported")
+
+        
 # Set up OpenTelemetry
 def setup_opentelemetry(app, service_name, environment):
-    """
-    Set up OpenTelemetry for a Flask application
-    """
-    # Create a resource with service info
-    resource = Resource(attributes={
-        SERVICE_NAME: service_name,
-        "environment": environment
-    })
-    
-    # Create a TracerProvider with the resource
-    tracer_provider = TracerProvider(resource=resource)
-    trace.set_tracer_provider(tracer_provider)
-    
-    # Get a tracer
-    tracer = trace.get_tracer(service_name)
-    
-    # Instrument Flask
-    FlaskInstrumentor().instrument_app(app)
-    
-    # Instrument requests library
-    RequestsInstrumentor().instrument()
-    
-    # Instrument logging
-    LoggingInstrumentor().instrument(set_logging_format=True)
+    if JaegerExporter is None:
+        print("Skipping OpenTelemetry setup due to import error")
+        return None, None
+
+    try:
+        from opentelemetry import trace
+        from opentelemetry.sdk.trace import TracerProvider
+        from opentelemetry.sdk.resources import SERVICE_NAME, Resource
+        from opentelemetry.sdk.trace.export import BatchSpanProcessor
+    except ImportError:
+        print("OpenTelemetry core libraries could not be imported")
+        return None, None
+
+    try:
+        # Create a resource with service info
+        resource = Resource(attributes={
+            SERVICE_NAME: service_name,
+            "environment": environment
+        })
+        
+        # Create a TracerProvider with the resource
+        tracer_provider = TracerProvider(resource=resource)
+        trace.set_tracer_provider(tracer_provider)
+        
+        # Configure Jaeger exporter
+        jaeger_host = os.environ.get('JAEGER_HOST', 'jaeger')
+        jaeger_port = int(os.environ.get('JAEGER_PORT', '6831'))
+        
+        # Create Jaeger exporter with fallback
+        try:
+            jaeger_exporter = JaegerExporter(
+                agent_host_name=jaeger_host,
+                agent_port=jaeger_port,
+            )
+            
+            # Add the exporter to the tracer provider
+            tracer_provider.add_span_processor(BatchSpanProcessor(jaeger_exporter))
+        except Exception as e:
+            print(f"Failed to configure Jaeger exporter: {e}")
+        
+        # Get a tracer
+        tracer = trace.get_tracer(service_name)
+        
+        print(f"OpenTelemetry tracing initialized for {service_name}")
+        
+        return tracer, None
+    except Exception as e:
+        print(f"Failed to set up OpenTelemetry tracing: {e}")
+        return None, None
     
     # Add middleware for cross-service tracing
     @app.before_request

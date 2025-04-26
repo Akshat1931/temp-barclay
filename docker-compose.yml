@@ -162,11 +162,12 @@ services:
   # Python Anomaly Detection Service - Production version
   anomaly-detection:
     build:
-      context: .
-      dockerfile: anomaly.Dockerfile
+      context: .  # Use the root directory as build context
+      dockerfile: anomaly-detection/Dockerfile  # Specify the Dockerfile location
     container_name: anomaly-detection
     volumes:
-      - ./anomaly-detection:/app
+      - ./anomaly-detection:/app/anomaly-detection
+      - ./monitoring:/app/monitoring
       - ./logs:/app/logs
     networks:
       - monitoring-network
@@ -176,35 +177,22 @@ services:
     environment:
       - ES_HOST=elasticsearch
       - ES_PORT=9200
-    # Rest of environment variables remain the same
-      # Add security if needed
-      # - ES_USER=elastic
-      # - ES_PASSWORD=${ELASTIC_PASSWORD}
-      
-      # Configuration for production
+      # Tracing configuration
+      - JAEGER_HOST=jaeger
+      - JAEGER_PORT=6831
+      # Additional environment variables
       - ANALYSIS_INTERVAL=300
       - HISTORICAL_WINDOW=24
       - MAX_SAMPLES=100000
       - ANOMALY_THRESHOLD=0.02
       - MIN_DATA_POINTS=10
-      
-      # Production alert settings
       - ALERT_WEBHOOK_URL=${SLACK_WEBHOOK_URL}
       - PAGERDUTY_API_KEY=${PAGERDUTY_API_KEY}
       - ALERT_EMAIL=${ALERT_EMAIL}
-      
-      # Service filtering (optional)
       - INCLUDED_SERVICES=user-service,product-service,payment-service,notification-service
-      # - EXCLUDED_SERVICES=test-service,qa-service
-      
-      # Response time threshold in ms
       - RESPONSE_TIME_THRESHOLD=1000
-      # Error rate threshold (0.1 = 10%)
       - ERROR_RATE_THRESHOLD=0.1
-      
-      # Index pattern for your actual API logs
       - API_LOGS_INDEX=api-logs-*
-
   # Grafana for additional dashboards (optional)
   grafana:
     image: grafana/grafana:9.3.6
@@ -245,11 +233,8 @@ services:
 # Include your actual API services here for direct monitoring
 
   # Example API service 1 (replace with your real services)
-  # User service
   user-service:
-    build:
-      context: .
-      dockerfile: api_service.Dockerfile
+    image: ${USER_SERVICE_IMAGE}
     container_name: user-service
     ports:
       - "8001:8000"
@@ -259,6 +244,7 @@ services:
       - JAEGER_HOST=jaeger
       - JAEGER_PORT=4317
       - LOG_LEVEL=INFO
+      # Add your actual service environment variables
     volumes:
       - ./logs/user-service:/app/logs
     networks:
@@ -268,11 +254,9 @@ services:
       - elasticsearch
       - jaeger
 
-  # Product service
+  # Example API service 2 (replace with your real services)
   product-service:
-    build:
-      context: .
-      dockerfile: api_service.Dockerfile
+    image: ${PRODUCT_SERVICE_IMAGE}
     container_name: product-service
     ports:
       - "8002:8000"
@@ -282,6 +266,7 @@ services:
       - JAEGER_HOST=jaeger
       - JAEGER_PORT=4317
       - LOG_LEVEL=INFO
+      # Add your actual service environment variables
     volumes:
       - ./logs/product-service:/app/logs
     networks:
@@ -291,11 +276,9 @@ services:
       - elasticsearch
       - jaeger
 
-  # Payment service
+  # Example API service 3 (replace with your real services)
   payment-service:
-    build:
-      context: .
-      dockerfile: api_service.Dockerfile
+    image: ${PAYMENT_SERVICE_IMAGE}
     container_name: payment-service
     ports:
       - "8003:8000"
@@ -305,6 +288,7 @@ services:
       - JAEGER_HOST=jaeger
       - JAEGER_PORT=4317
       - LOG_LEVEL=INFO
+      # Add your actual service environment variables
     volumes:
       - ./logs/payment-service:/app/logs
     networks:
@@ -313,3 +297,12 @@ services:
     depends_on:
       - elasticsearch
       - jaeger
+
+volumes:
+  elasticsearch-data:
+  prometheus-data:
+  grafana-data:
+
+networks:
+  monitoring-network:
+    driver: bridge

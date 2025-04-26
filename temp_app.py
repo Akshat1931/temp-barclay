@@ -1,6 +1,5 @@
 import sys
 import os
-
 import json
 import time
 import logging
@@ -12,27 +11,13 @@ from sklearn.ensemble import IsolationForest
 from sklearn.preprocessing import StandardScaler
 from sklearn.neighbors import LocalOutlierFactor
 import requests
-import sys
-import os
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-from monitoring.utils.production_logging import configure_production_logging
 
-# Import OpenTelemetry
-try:
-    from opentelemetry import trace
-    from opentelemetry.exporter.jaeger.thrift import JaegerExporter
-    from opentelemetry.sdk.trace import TracerProvider
-    from opentelemetry.sdk.trace.export import BatchSpanProcessor
-    from opentelemetry.sdk.resources import SERVICE_NAME, Resource
-except ImportError:
-    trace = None
-    JaegerExporter = None
-# Configure logging
+# Configure logging directly (bypass the missing module)
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
-logger = configure_production_logging(__name__)
+logger = logging.getLogger("anomaly-detection")
 
 # Elasticsearch connection - Use real connection parameters
 ES_HOST = os.environ.get('ES_HOST', 'localhost')
