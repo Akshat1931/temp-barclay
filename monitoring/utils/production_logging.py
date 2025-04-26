@@ -30,7 +30,9 @@ class ProductionJsonFormatter(jsonlogger.JsonFormatter):
             "logger": "%(name)s",
             "message": "%(message)s",
         }
-        super().__init__(json_fmt=json_fmt, **kwargs)
+        fmt = ' '.join(['%({0:s})s'.format(k) for k in json_fmt.keys()])
+        super().__init__(fmt=fmt, **kwargs)
+        
         
     def add_fields(self, log_record, record, message_dict):
         """Add standard fields to the log record"""
@@ -296,6 +298,7 @@ def setup_flask_logging(app, service_name=None):
         return response
     
     # Exception handler
+        # Exception handler
     @app.errorhandler(Exception)
     def handle_exception(error):
         logger.error(
@@ -312,8 +315,13 @@ def setup_flask_logging(app, service_name=None):
             }
         )
         
-        # Let Flask handle the exception
-        return app.handle_user_exception(error)
+        # Return a proper error response instead of calling handle_user_exception
+        response = {
+            "error": type(error).__name__,
+            "message": str(error),
+            "request_id": getattr(g, 'request_id', 'unknown')
+        }
+        return response, 500  # Internal Server Error status code
     
     return logger
 
